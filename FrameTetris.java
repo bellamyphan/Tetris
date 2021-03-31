@@ -13,18 +13,16 @@ public class FrameTetris extends Frame {
         // Close the window at the window menu "X - button".
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                System.exit(0);
+            	// Output message to the console.
+                System.out.println("Exit Frame.");
+            	System.exit(0);
             }
         });
-        
         // Output message to the console.
         System.out.println("Call frame constructor.");
-        
-        // Initialize the window size.
-        Dimension d = getSize();
-        setSize(d.width - 1, d.height - 1);
-        System.out.println("d.width = " + d.width);
-        System.out.println("d.height = " + d.height);
+        // Initialize the window size based on the current screen size.
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setSize((int)screenSize.getWidth(), (int)screenSize.getHeight());
         // Add a canvas in this frame.
         add("Center", new CanvasTetris());
         // Set visible.
