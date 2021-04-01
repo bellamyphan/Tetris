@@ -9,8 +9,10 @@ public class CanvasTetris extends Canvas {
     // Hold the screen mode.
 	// "0": Starting screen.
 	// "1": Playing screen.
-	// "2": Summary screen (After losing the game)
+	// "2": Summary screen (After losing the game).
+	// "3": High Score table.
 	int screenMode;
+	
 	// Hold device coordinates.
 	int maxX, maxY, xCenter, yCenter, minMaxXY;
 	// Hold the total size of the canvas based on the minMaxXY (Isotropic Mapping Mode).
@@ -19,6 +21,7 @@ public class CanvasTetris extends Canvas {
 	float unit;
 	// Mouse coordinates.
 	int mouseX, mouseY;
+	
 	// (Starting Screen) "PLAY TETRIS" coordinates.
 	int x1, y1, x2, y2;
 	// (Starting Screen) "HIGH SCORES" coordinates.
@@ -49,11 +52,33 @@ public class CanvasTetris extends Canvas {
     				if (x5 < mouseX && mouseX < x6 && y5 < mouseY && mouseY < y6) {
     					// Message to the console.
     					System.out.println("User hit EXIT button.");
+    					System.out.println("Exit Tetris.");
     					
     					// Exit the program.
     					System.exit(0);
     				}
+    				
+    				// Check for box PLAY TETRIS.
+    				if (x1 < mouseX && mouseX < x2 && y1 < mouseY && mouseY < y2) {
+    					// Message to the console.
+    					System.out.println("User hit PLAY TETRIS button.");
+    					
+    					// Change the ScreenMode.
+    					screenMode = 1;
+    				}
+    				
+    				// Check for the box HIGH SCORES.
+    				if (x3 < mouseX && mouseX < x4 && y3 < mouseY && mouseY < y4) {
+    					// Message to the console.
+    					System.out.println("User hit HIGH SCORES button.");
+    					
+    					// Change the ScreenMode.
+    					screenMode = 3;
+    				}
     			}
+    			
+    			// Repaint the canvas.
+    			repaint();
     		}
     		
     	});
@@ -80,6 +105,13 @@ public class CanvasTetris extends Canvas {
 	
 	// Paint method of this canvas.
 	public void paint(Graphics g) {
+		
+		// Message to the console.
+		System.out.println("Paint the canvas");
+		
+		// Set the default color to BLACK.
+		g.setColor(Color.BLACK);
+		
 		// Initialize the graphics.
 		initgr();
 		
