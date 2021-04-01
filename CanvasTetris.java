@@ -1,6 +1,7 @@
 // CanvasTetris.java: This is the canvas.
 
 import java.awt.*;
+import java.awt.event.*;
 
 // This is the canvas.
 public class CanvasTetris extends Canvas {
@@ -16,6 +17,8 @@ public class CanvasTetris extends Canvas {
 	float side;
 	// Hold the unit of the canvas (22 x 22 blocks) based on the side.
 	float unit;
+	// Mouse coordinates.
+	int mouseX, mouseY;
 	// (Starting Screen) "PLAY TETRIS" coordinates.
 	int x1, y1, x2, y2;
 	// (Starting Screen) "HIGH SCORES" coordinates.
@@ -27,6 +30,33 @@ public class CanvasTetris extends Canvas {
 	public CanvasTetris() {
 		// First thing to do is that print the "Starting Screen" - "Menu".
 		screenMode = 0;
+		
+		// Add MouseListener to this Canvas.
+		addMouseListener(new MouseAdapter() {
+			// Record the MousePressed events.
+    		public void mousePressed(MouseEvent e) {
+    			// Get the coordinate of the mouse if it is pressed.
+    			mouseX = e.getX();
+    			mouseY = e.getY();
+    			
+    			// Message to the console.
+    			System.out.println("User pressed the mouse. (" + mouseX + ", " + mouseY + ")");
+    			
+    			// In the "Starting Screen".
+    			// Check if the the user choose 1 of 3 boxes, Play Tetris, High Scores, Exit.
+    			if (screenMode == 0) {
+    				// Check for box EXIT.
+    				if (x5 < mouseX && mouseX < x6 && y5 < mouseY && mouseY < y6) {
+    					// Message to the console.
+    					System.out.println("User hit EXIT button.");
+    					
+    					// Exit the program.
+    					System.exit(0);
+    				}
+    			}
+    		}
+    		
+    	});
 	}
 	
 	// Initialize the graphics.
