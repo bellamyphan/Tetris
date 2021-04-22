@@ -100,7 +100,8 @@ public class CanvasTetris extends Canvas {
 		// Use 99% of the canvas to paint.
 		side = 0.99F * minMaxXY;
 		// Device the paintable canvas area into 22x22 blocks, each block has size of 1 unit.
-		unit = side / 22;
+	//	unit = side / 22; doesnt work pls dont do this
+		unit = 46;
 	}
 	
 	// Paint method of this canvas.
@@ -122,7 +123,7 @@ public class CanvasTetris extends Canvas {
 			paintMenu(g);
 			break;
 		case 1:
-			// Do something here.
+			paintGame(g);
 			break;
 		case 2:
 			// Do something here.
@@ -176,5 +177,40 @@ public class CanvasTetris extends Canvas {
 		
 		/*// Scaling.
 		g.drawLine(xCenter, 0, xCenter, maxY);*/
+	}
+	
+	public void paintGame(Graphics g) {
+		// Message to the console.
+		System.out.println("Print the Gaming Screen.");
+		// Draw the boundary of this canvas.
+		g.drawRect(xCenter - (int) (10 * unit), yCenter - (int) (10 * unit), (int) (20 * unit), (int) (20 * unit));
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (unit)));	
+		g.drawString("TETRIS", (int) (xCenter + -2 * unit), (int) (yCenter - 10.2 * unit));
+		//create the next piece box
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (unit)));		
+		g.drawString("Next Piece:", (int) (xCenter + 12 * unit), (int) (yCenter - 10.2 * unit));
+		g.drawRect(xCenter - (int) (-12 * unit), yCenter - (int) (10 * unit), (int) (5 * unit), (int) (5 * unit));
+		//draw score
+		g.drawString("Score:", (int) (xCenter + 12 * unit), (int) (yCenter - 4 * unit));
+		
+		//for grid
+		int topY=yCenter - (int) (10* unit); //top of y for drawing squares
+		int bottomY=yCenter - (int) (-9* unit); //bottom of y for drawing squares
+		int leftMostX=xCenter - (int) (10 * unit); //left of x for drawing squares
+		int rightMostX=xCenter - (int) (-9 * unit); //right of x for drawing squares
+		//draw grid
+		for(int x=10; x>=-9;x--)
+		{
+			for(int y=10; y>=-9;y--)
+			{
+			g.drawRect(xCenter-(int) (x* unit), yCenter-(int) (y* unit), (int) (unit), (int) (unit));
+			}
+		}
+				
+		
+		//for ex change numbers from 0 to 19 for left(0) to right(19) or top(0) to bottom(19)
+		g.fillRect((int) (leftMostX+unit*0), (int) (topY+unit*0), (int) (unit), (int) (unit));//fills top left
+		g.fillRect((int) (leftMostX+unit*19), (int) (topY+unit*19), (int) (unit), (int) (unit));//fills bottom right
+		
 	}
 }
