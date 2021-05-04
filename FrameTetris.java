@@ -6,7 +6,7 @@ import java.awt.event.*;
 // This is the frame.
 public class FrameTetris extends Frame {
     
-    // Constructor.
+    // Constructor for the frame.
     public FrameTetris() {
         // Set the frame name (window name).
         super("Tetris - Group 7");

@@ -29,7 +29,7 @@ public class CanvasTetris extends Canvas {
 	// (Starting Screen) "EXIT" coordinates.
 	int x5, y5, x6, y6;
 
-	// Default constructor.
+	// Default constructor for this canvas.
 	public CanvasTetris() {
 		// First thing to do is that print the "Starting Screen" - "Menu".
 		screenMode = 0;
