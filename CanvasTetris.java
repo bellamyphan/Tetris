@@ -100,7 +100,7 @@ public class CanvasTetris extends Canvas {
 		// Use 99% of the canvas to paint.
 		side = 0.99F * minMaxXY;
 		// Device the paintable canvas area into 22x22 blocks, each block has size of 1 unit.
-	//	unit = side / 22; doesnt work pls dont do this
+        // Unit = side / 22; doesnt work pls dont do this
 		unit = 46;
 	}
 	
