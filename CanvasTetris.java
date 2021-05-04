@@ -85,6 +85,7 @@ public class CanvasTetris extends Canvas {
 	}
 	
 	// Initialize the graphics.
+    // Called in the paint method.
 	public void initgr() {
 		// Get dimension of the canvas.
 		Dimension d = getSize();
