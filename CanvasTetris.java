@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 // This is the canvas.
-public class CanvasTetris extends Canvas {
+public class CanvasTetris extends Canvas implements KeyListener {
 	
     // Hold the screen mode.
 	// "0": Starting screen.
@@ -35,6 +35,10 @@ public class CanvasTetris extends Canvas {
         // Set the screenMode = 0.
 		screenMode = 0;
 		
+		// Add KeyListener to this Canvas.
+		// Handle KeyEvents below.
+		addKeyListener(this);
+		
 		// Add MouseListener to this Canvas.
 		addMouseListener(new MouseAdapter() {
 			// Record the MousePressed event.
@@ -44,7 +48,7 @@ public class CanvasTetris extends Canvas {
     			mouseX = e.getX();
     			mouseY = e.getY();
     			// Message to the console.
-    			System.out.println("User pressed the mouse. (" + mouseX + ", " + mouseY + ")");
+    			// System.out.println("User pressed the mouse. (" + mouseX + ", " + mouseY + ")");
     			// In the "Starting Screen".
     			// Check if the the user choose 1 of 3 boxes, Play Tetris, High Scores, Exit.
     			if (screenMode == 0) {
@@ -73,9 +77,8 @@ public class CanvasTetris extends Canvas {
     			}
     			// Repaint the canvas after mousePressed event.
     			repaint();
-    		} // End mousePresses event.
-    		
-    	});
+    		} // End mousePresses event.	
+    	}); // End mouseListener.
 	}
 	
 	
@@ -280,6 +283,29 @@ public class CanvasTetris extends Canvas {
 		g.fillRect((int) (leftMostX+unit*0), (int) (topY+unit*0), (int) (unit), (int) (unit));//fills top left
 		g.fillRect((int) (leftMostX+unit*19), (int) (topY+unit*19), (int) (unit), (int) (unit));//fills bottom right
 		*/
+		
+	}
+
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		System.out.println("Key Typed");
+		System.out.println("Key code = " + e.getKeyCode());
+	}
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		System.out.println("Key Pressed");
+		System.out.println("Key code = " + e.getKeyCode());
+		
+	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		System.out.println("Key Released");
+		System.out.println("Key code = " + e.getKeyCode());
 		
 	}
 
