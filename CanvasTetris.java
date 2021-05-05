@@ -101,23 +101,24 @@ public class CanvasTetris extends Canvas {
 	
 	// Paint method of this canvas.
 	public void paint(Graphics g) {
-		
 		// Message to the console.
-		System.out.println("Paint the canvas");
-		
+		System.out.println("Paint the canvas1");
 		// Set the default color to BLACK.
 		g.setColor(Color.BLACK);
-		
-		// Initialize the graphics.
+		// Initialize the coordinates for this canvas.
 		initgr();
 		
 		// Paint the canvas based on the ScreenMode.
+        // Constructor set screenMode to 0.
+        // MousePressed will change screenMode.
 		switch (screenMode) {
 		case 0:
 			// Staring Screen.
+            // Print the main menu.
 			paintMenu(g);
 			break;
 		case 1:
+            // Print the tetris game.
 			paintGame(g);
 			break;
 		case 2:
@@ -128,8 +129,10 @@ public class CanvasTetris extends Canvas {
 		}
 	}
 	
+    
 	// Starting Screen.
 	// Goal: Print the menu with those options: Play, HighScores, Quit.
+    // MousePressed will change the screenMode.
 	public void paintMenu(Graphics g) {
 		// Message to the console.
 		System.out.println("Print the Starting Screen.");
