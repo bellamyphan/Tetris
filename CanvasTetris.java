@@ -102,7 +102,7 @@ public class CanvasTetris extends Canvas {
 	// Paint method of this canvas.
 	public void paint(Graphics g) {
 		// Message to the console.
-		System.out.println("Paint the canvas1");
+		System.out.println("Paint the canvas");
 		// Set the default color to BLACK.
 		g.setColor(Color.BLACK);
 		// Initialize the coordinates for this canvas.
@@ -136,9 +136,8 @@ public class CanvasTetris extends Canvas {
 	public void paintMenu(Graphics g) {
 		// Message to the console.
 		System.out.println("Print the Starting Screen.");
-		
 		// Draw the boundary of this canvas.
-		g.drawRect(xCenter - (int) (11 * unit), yCenter - (int) (11 * unit), (int) (22 * unit), (int) (22 * unit));
+		// g.drawRect(xCenter - (int) (11 * unit), yCenter - (int) (11 * unit), (int) (22 * unit), (int) (22 * unit));
 		
 		// Set up the Font and the Size for printing strings.
 		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (2 * unit)));
