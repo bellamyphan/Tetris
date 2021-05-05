@@ -31,8 +31,11 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	
 	// Hold the current running tetris variant while playing the game.
 	TetrisVariant runningVariant;
+	TetrisVariant nextVariant;
 	// Keep track if this variant is halted.
 	boolean isHalted;
+	// Keep track if the next variant is used.
+	boolean isUsed;
 	
 	// Hold the gridTetris for the tetris game.
 	// The origin of this grid is at (-9,-10).
@@ -57,8 +60,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 		}
 		
-		// Initialize the value of isHalted to create a new tetris variant.
+		// Initialize the value of isHalted and isUsed to create a new tetris variant.
 		isHalted = true;
+		isUsed = true;
+		
 		
 		// Initialize the value for bottom boundary x and y.
 		bottomBoundaryX = new int[10];
@@ -298,14 +303,24 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		}
 		
 		// Create a new variant.
-		if (isHalted) {
-			runningVariant = new TetrisVariant();
-			isHalted = false;
+		if (isUsed) {
+			nextVariant = new TetrisVariant();
+			isUsed = false;
+			nextVariant.changeCoordinatesToNewBox();
 		}
 		
-		// Paint the tetris variant.
-		this.drawTetrisVariant(g);
+		// Create a new variant.
+		if (isHalted) {
+			runningVariant = nextVariant;
+			isUsed = true;
+			isHalted = false;
+			runningVariant.changeCoordiantesToStartingPoint();
+		}
 		
+		// Paint the running tetris variant.
+		this.drawTetrisVariant(g, runningVariant);
+		// Paint the next tetris variant.
+		this.drawTetrisVariant(g, nextVariant);
 		
 		/*
 		// Draw the boundary of this canvas.
@@ -342,20 +357,20 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	}
 	
 	// Draw the current tetris variant.
-	public void drawTetrisVariant(Graphics g) {
+	public void drawTetrisVariant(Graphics g, TetrisVariant variant) {
 		// Check for the bottom boundary.
 		checkBottomBoundary();
 		
 		// Get the current coordinates.
-		int x = runningVariant.getX();
-		int y = runningVariant.getY();
+		int x = variant.getX();
+		int y = variant.getY();
 		// Paint the center grid. Debug.
 		int x1 = x;
 		int y1 = y;
 		// Set the color based on this variant.
-		g.setColor(runningVariant.getColor());
+		g.setColor(variant.getColor());
 		// Get the list of string code.
-		String[] list = runningVariant.outputStringCode().split("");
+		String[] list = variant.outputStringCode().split("");
 		for (int i = 0; i < list.length; i++) {
 			if (list[i].compareTo("U") == 0) {
 				y++;
@@ -379,20 +394,20 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Default color is BLACK.
 		g.setColor(Color.BLACK);
 		// Draw the edge after finish painting the variant.
-		drawTetrisVariantEdge(g);
+		drawTetrisVariantEdge(g, variant);
 		
 	}
 	
 	// Draw tetris variant edge.
 	// Called after drawing the tetris variant.
-	public void drawTetrisVariantEdge(Graphics g) {
+	public void drawTetrisVariantEdge(Graphics g, TetrisVariant variant) {
 		// Default color is BLACK.
 		g.setColor(Color.BLACK);
 		// Get the current coordinates.
-		int x = runningVariant.getX();
-		int y = runningVariant.getY();
+		int x = variant.getX();
+		int y = variant.getY();
 		// Get the list of string code.
-		String[] list = runningVariant.outputStringCode().split("");
+		String[] list = variant.outputStringCode().split("");
 		for (int i = 0; i < list.length; i++) {
 			if (list[i].compareTo("U") == 0) {
 				y++;

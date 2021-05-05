@@ -31,77 +31,26 @@ public class TetrisVariant {
     
     // Constructor.
     TetrisVariant() {
-    	// Based on the 22x22 grid, new variant will appear at (-4, 10)
-    	x = -4;
-    	y = 13;
+    	// Based on the 22x22 grid, new variant will appear outside the canvas.
+    	x = 0;
+    	y = 20;
     	// Get random values for color and shape.
     	color = this.getRandomColor();
     	shape = this.getRandomShape();
     	state = this.getRandomState();
-    	
-    	
     }
-
-    /*
-    // Constructor.
-    TetrisVariant(TetrisVariant[] blockRegistry){
-        //Sets the blockID and registers the block in blockRegistry
-        int i = 0;
-        while (!(blockRegistry[i] == null))
-        {
-            i+=1;
-        }
-
-        blockRegistry[i] = this;
-        // this.blockID = i;
-
-        //Sets the blockColor and blockType
-        Random rand = new Random();
-        int randomType = rand.nextInt(7) + 1;
-        //this.blockType = randomType;
-
-        switch (randomType)
-        {
-            case 1:
-                //The "I" block
-
-                this.color = Color.RED;
-                break;
-            case 2:
-                //The "S" block
-
-                this.color = Color.ORANGE;
-                break;
-            case 3:
-                //The "J" block
-
-                this.color = Color.YELLOW;
-                break;
-            case 4:
-                //The "O" block
-            	
-                this.color = Color.GREEN;
-                break;
-            case 5:
-                //The "Z" block
-
-                this.color = Color.BLUE;
-                break;
-            case 6:
-                //The "T" block
-
-                this.color = Color.MAGENTA;
-                break;
-            case 7:
-                //The "L" block
-
-                this.color = Color.PINK;
-                break;
-        }
-
-        // this.isHalted = false;
+    
+    // Change the coordinates to the starting point.
+    public void changeCoordiantesToStartingPoint() {
+    	x = -5;
+    	y = 13;
     }
-    */
+    
+    // Change the coordinates to the Next Piece box.
+    public void changeCoordinatesToNewBox() {
+    	x = 6;
+    	y = 7;
+    }
 
     // Used for updating the grid after block rotations or grid iterations (block fallen by one layer).
     public void updateBlockCenter() {
@@ -304,7 +253,6 @@ public class TetrisVariant {
     public Color getColor() {
     	return color;
     }
-    
   
     
     
