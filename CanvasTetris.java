@@ -256,13 +256,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	public void paintGame(Graphics g) {
 		
 		
-		
-		// Debug. Output Bottom boundary.
-		for (int i = 0; i < 10; i++) {
-			System.out.print(" " + bottomBoundaryY[i]);
-		}
-		System.out.println();
-		
 		// Draw the grid.
 		this.drawGrid(g);
 		g.setColor(Color.BLACK);
@@ -353,14 +346,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Check for the bottom boundary.
 		checkBottomBoundary();
 		
-		// Debug.
-		if(runningVariant.getY() == -8) {
-			System.out.print("");
-		}
-		
-		// Message to console.
-		System.out.println("Draw variant.");
-		
 		// Get the current coordinates.
 		int x = runningVariant.getX();
 		int y = runningVariant.getY();
@@ -393,6 +378,38 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		g.fillRect(iX(x1), iY(y1), (int) unit, (int) unit);
 		// Default color is BLACK.
 		g.setColor(Color.BLACK);
+		// Draw the edge after finish painting the variant.
+		drawTetrisVariantEdge(g);
+		
+	}
+	
+	// Draw tetris variant edge.
+	// Called after drawing the tetris variant.
+	public void drawTetrisVariantEdge(Graphics g) {
+		// Default color is BLACK.
+		g.setColor(Color.BLACK);
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+			if (list[i].compareTo("P") == 0) {
+				g.drawRect(iX(x), iY(y), (int) (unit), (int) (unit));
+			}
+		}
 		
 	}
 	
@@ -408,8 +425,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	
 	// Check the tetris variant with bottom boundary.
 	public void checkBottomBoundary() {
-		// Message to console.
-		System.out.println("Check bottom boundary");
 		// Get the current coordinates.
 		int x = runningVariant.getX();
 		int y = runningVariant.getY();
@@ -442,6 +457,136 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 		}
 	}
+	
+	
+	// Check the left boundary.
+	// This method will check if the variant hit the left boundary, then send the message to the KeyListener.
+	// Then will not allow it move left anymore.
+	public boolean checkLeftBoundary() {
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			
+			if (x <= -9) {
+				// Message to console.
+				System.out.println("Hit the Left Boundary");
+				return true;
+			}
+			
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+		// If it pass the loop, then it does not hit the left boundary.
+		return false;
+	}
+	// Similar to the method checkLeftBoundary. But specific for rotation case.
+	public boolean checkLeftBoundaryRotation() {
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			
+			if (x < -9) {
+				// Message to console.
+				System.out.println("Hit the Left Boundary while rotating.");
+				return true;
+			}
+			
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+		// If it pass the loop, then it does not hit the left boundary.
+		return false;
+	}
+	// Check the right boundary.
+	public boolean checkRightBoundary() {
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			
+			if (x > -1) {
+				// Message to console.
+				System.out.println("Hit the Right Boundary");
+				return true;
+			}
+			
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+		// If it pass the loop, then it does not hit the left boundary.
+		return false;
+	}
+	// Check right boundary while rotating.
+	public boolean checkRightBoundaryRotation() {
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			
+			if (x > 0) {
+				// Message to console.
+				System.out.println("Hit the Right Boundary while rotating.");
+				return true;
+			}
+			
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+		// If it pass the loop, then it does not hit the left boundary.
+		return false;
+	}
+	
+	
 	
 	// Update bottom boundary.
 	public void updateBottomBoundary() {
@@ -515,17 +660,26 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Check if we are at playing mode.
 		if (screenMode == 1) {
 			// Left Arrow.
-			if (e.getKeyCode() == 37) {
+			// Check for the left boundary.
+			if (e.getKeyCode() == 37 && !checkLeftBoundary()) {
 				runningVariant.moveLeft();
 				repaint();
 			}
-			// Up Arrow.
+			// Up Arrow. Rotate the variant.
+			// If it is currently hitting the left or right boundary and rotate, push it to the right one unit.
 			if (e.getKeyCode() == 38) {
 				runningVariant.rotate();
+				if (checkLeftBoundaryRotation()) {
+					runningVariant.moveRight();
+				}
+				if (checkRightBoundaryRotation()) {
+					runningVariant.moveLeft();
+				}
 				repaint();
 			}
 			// Right Arrow.
-			if (e.getKeyCode() == 39) {
+			// Check for the right boundary.
+			if (e.getKeyCode() == 39 && !checkRightBoundary()) {
 				runningVariant.moveRight();
 				repaint();
 			}
