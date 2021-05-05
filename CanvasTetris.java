@@ -32,19 +32,19 @@ public class CanvasTetris extends Canvas {
 	// Default constructor for this canvas.
 	public CanvasTetris() {
 		// First thing to do is that print the "Starting Screen" - "Menu".
+        // Set the screenMode = 0.
 		screenMode = 0;
 		
 		// Add MouseListener to this Canvas.
 		addMouseListener(new MouseAdapter() {
-			// Record the MousePressed events.
+			// Record the MousePressed event.
     		public void mousePressed(MouseEvent e) {
     			// Get the coordinate of the mouse if it is pressed.
+                // Use the mouse coordinates to determine which boxes is clicked or none of boxes are clicked.
     			mouseX = e.getX();
     			mouseY = e.getY();
-    			
     			// Message to the console.
     			System.out.println("User pressed the mouse. (" + mouseX + ", " + mouseY + ")");
-    			
     			// In the "Starting Screen".
     			// Check if the the user choose 1 of 3 boxes, Play Tetris, High Scores, Exit.
     			if (screenMode == 0) {
@@ -53,33 +53,27 @@ public class CanvasTetris extends Canvas {
     					// Message to the console.
     					System.out.println("User hit EXIT button.");
     					System.out.println("Exit Tetris.");
-    					
     					// Exit the program.
     					System.exit(0);
     				}
-    				
     				// Check for box PLAY TETRIS.
     				if (x1 < mouseX && mouseX < x2 && y1 < mouseY && mouseY < y2) {
     					// Message to the console.
     					System.out.println("User hit PLAY TETRIS button.");
-    					
     					// Change the ScreenMode.
     					screenMode = 1;
     				}
-    				
     				// Check for the box HIGH SCORES.
     				if (x3 < mouseX && mouseX < x4 && y3 < mouseY && mouseY < y4) {
     					// Message to the console.
     					System.out.println("User hit HIGH SCORES button.");
-    					
     					// Change the ScreenMode.
     					screenMode = 3;
     				}
     			}
-    			
-    			// Repaint the canvas.
+    			// Repaint the canvas after mousePressed event.
     			repaint();
-    		}
+    		} // End mousePresses event.
     		
     	});
 	}
