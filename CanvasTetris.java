@@ -268,8 +268,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Debug. Paint bottom boundary.
 		paintBottomBoundary(g);
 		
-		g.fillRect(iX(0), iY(0), (int)unit, (int) unit);
-		
 		// Print the playground boundary.
 		g.drawRect(iX(-9), iY(10), (int) (10 * unit), (int) (20 * unit));
 		
@@ -615,9 +613,28 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 			bottomBoundaryY[x] = highY;
 		}
-		
-		
 	}
+	
+	
+	// Count the distance from the current variant to the bottom boundary.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	// Add the running variant to the grid.
 	public void addVariantToGrid() {
@@ -672,6 +689,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		
+		// Debug.
+		System.out.println(e.getKeyCode());
+		
 		// Check if we are at playing mode.
 		if (screenMode == 1) {
 			// Left Arrow.
@@ -682,13 +703,16 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 			// Up Arrow. Rotate the variant.
 			// If it is currently hitting the left or right boundary and rotate, push it to the right one unit.
+			// If we get the I case, right rotation checking will need to be done twice.
 			if (e.getKeyCode() == 38) {
 				runningVariant.rotate();
-				if (checkLeftBoundaryRotation()) {
-					runningVariant.moveRight();
-				}
-				if (checkRightBoundaryRotation()) {
-					runningVariant.moveLeft();
+				while (checkLeftBoundaryRotation() || checkRightBoundaryRotation()) {
+					if (checkLeftBoundaryRotation()) {
+						runningVariant.moveRight();
+					}
+					if (checkRightBoundaryRotation()) {
+						runningVariant.moveLeft();
+					}
 				}
 				repaint();
 			}
@@ -702,6 +726,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			if (e.getKeyCode() == 40) {
 				runningVariant.moveDown();
 				repaint();
+			}
+			// Space Button.
+			if (e.getKeyCode() == 32) {
+				
 			}
 		}
 		
