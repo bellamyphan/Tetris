@@ -1,4 +1,72 @@
+import java.awt.*;
+
 public class GridTetris {
+	
+	// Hold the coordinate.
+	private int x;
+	private int y;
+	
+	// Hold the color.
+	private Color color;
+	
+	// Constructor.
+	public GridTetris() {
+		x = 0;
+		y = 0;
+		color = Color.WHITE;
+	}
+	public GridTetris(int x, int y, Color color) {
+		this.x = x;
+		this.y = y;
+		this.color = color;
+	}
+	
+	// Set methods.
+	public void setX(int x) {
+		this.x = x;
+	}
+	public void setY(int y) {
+		this.y = y;
+	}
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	
+	// Get methods.
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	public Color getColor() {
+		return color;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
     //Creates a default grid for the blocks to fall into
     //This is the updated grid, used for painting the grid of the game
     SquareTetris newGrid[][] = new SquareTetris[20][20];
@@ -54,6 +122,6 @@ public class GridTetris {
     //Updates the old grid's values for future iterations
     public void updateOldGrid() {
         oldGrid = newGrid.clone();
-    }
+    } */
 }
 

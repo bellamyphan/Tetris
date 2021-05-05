@@ -2,12 +2,19 @@
 
 public class Main {
     public static void main(String[] args) {
+    	
+    	
+    	/*
+    	// Testing the string split method.
+    	String string = "PUPUPUPU";
+    	String[] list = string.split("");
+    	for (int i = 0; i < list.length; i++) {
+    		System.out.println(list[i]);
+    	}
+    	*/
+    	
+    	
         // Create the Tetris frame.
-        // Message to the console.
-        System.out.println("Create a new Frame.");
         new FrameTetris();
-        // Message to the console.
-        System.out.println("The main exit correctly.");
-        System.out.println("Delete console messages after finish debugging.");
     }
 }

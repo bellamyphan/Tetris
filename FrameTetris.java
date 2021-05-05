@@ -18,8 +18,6 @@ public class FrameTetris extends Frame {
             	System.exit(0);
             }
         });
-        // Output message to the console.
-        System.out.println("Call frame constructor.");
         // Initialize the window size based on the current screen size.
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setSize((int)screenSize.getWidth(), (int)screenSize.getHeight());

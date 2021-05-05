@@ -28,9 +28,48 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	int x3, y3, x4, y4;
 	// (Starting Screen) "EXIT" coordinates.
 	int x5, y5, x6, y6;
+	
+	// Hold the current running tetris variant while playing the game.
+	TetrisVariant runningVariant;
+	// Keep track if this variant is halted.
+	boolean isHalted;
+	
+	// Hold the gridTetris for the tetris game.
+	// The origin of this grid is at (-9,-10).
+	GridTetris[][] grid;
+	
+	// Botttom boundary, for the Tetris game.
+	// If the current runningVariant reach the bottom boundary, then it will be halted and then create a new variant.
+	int[] bottomBoundaryX;
+	int[] bottomBoundaryY;
+	
+	
 
 	// Default constructor for this canvas.
 	public CanvasTetris() {
+		
+		// Initialize the gridTetris.
+		// The origin of this grid is at (-9,-10).
+		grid = new GridTetris[10][20];
+		for (int x = 0; x < 10; x++) {
+			for (int y = 0; y < 20; y++) {
+				grid[x][y] = new GridTetris(-9 + x, -10 + y, Color.WHITE);
+			}
+		}
+		
+		// Initialize the value of isHalted to create a new tetris variant.
+		isHalted = true;
+		
+		// Initialize the value for bottom boundary x and y.
+		bottomBoundaryX = new int[10];
+		bottomBoundaryY = new int[10];
+		for (int i = 0; i < bottomBoundaryX.length; i++) {
+			bottomBoundaryX[i] = -9 + i;
+		}
+		for (int i = 0; i < bottomBoundaryY.length; i++) {
+			bottomBoundaryY[i] = -10;
+		}
+		
 		// First thing to do is that print the "Starting Screen" - "Menu".
         // Set the screenMode = 0.
 		screenMode = 0;
@@ -66,6 +105,8 @@ public class CanvasTetris extends Canvas implements KeyListener {
     					System.out.println("User hit PLAY TETRIS button.");
     					// Change the ScreenMode.
     					screenMode = 1;
+    					// Repaint the canvas.
+    					repaint();
     				}
     				// Check for the box HIGH SCORES.
     				if (x3 < mouseX && mouseX < x4 && y3 < mouseY && mouseY < y4) {
@@ -73,10 +114,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
     					System.out.println("User hit HIGH SCORES button.");
     					// Change the ScreenMode.
     					screenMode = 3;
+    					// Repaint the canvas.
+    					repaint();
     				}
     			}
-    			// Repaint the canvas after mousePressed event.
-    			repaint();
     		} // End mousePresses event.	
     	}); // End mouseListener.
 	}
@@ -120,8 +161,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	
 	// Paint method of this canvas.
 	public void paint(Graphics g) {
-		// Message to the console.
-		System.out.println("Paint the canvas");
 		// Set the default color to BLACK.
 		g.setColor(Color.BLACK);
 		// Initialize the coordinates for this canvas.
@@ -153,8 +192,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	// Goal: Print the menu with those options: Play, HighScores, Quit.
     // MousePressed will change the screenMode.
 	public void paintMenu(Graphics g) {
-		// Message to the console.
-		System.out.println("Print the Starting Screen.");
 		
 		// Draw the boundary of this canvas.
 		g.drawRect(xCenter - (int) (11 * unit), yCenter - (int) (11 * unit), (int) (22 * unit), (int) (22 * unit));
@@ -217,8 +254,23 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	}
 	
 	public void paintGame(Graphics g) {
-		// Message to the console.
-		System.out.println("Print the Gaming Screen.");
+		
+		
+		
+		// Debug. Output Bottom boundary.
+		for (int i = 0; i < 10; i++) {
+			System.out.print(" " + bottomBoundaryY[i]);
+		}
+		System.out.println();
+		
+		// Draw the grid.
+		this.drawGrid(g);
+		g.setColor(Color.BLACK);
+		
+		// Debug. Paint bottom boundary.
+		paintBottomBoundary(g);
+		
+		g.fillRect(iX(0), iY(0), (int)unit, (int) unit);
 		
 		// Print the playground boundary.
 		g.drawRect(iX(-9), iY(10), (int) (10 * unit), (int) (20 * unit));
@@ -251,6 +303,16 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		for (int y = -10; y < 11; y++) {
 			g.drawLine(iX(-9), iY(y), iX(1), iY(y));
 		}
+		
+		// Create a new variant.
+		if (isHalted) {
+			runningVariant = new TetrisVariant();
+			isHalted = false;
+		}
+		
+		// Paint the tetris variant.
+		this.drawTetrisVariant(g);
+		
 		
 		/*
 		// Draw the boundary of this canvas.
@@ -285,27 +347,201 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		*/
 		
 	}
+	
+	// Draw the current tetris variant.
+	public void drawTetrisVariant(Graphics g) {
+		// Check for the bottom boundary.
+		checkBottomBoundary();
+		
+		// Debug.
+		if(runningVariant.getY() == -8) {
+			System.out.print("");
+		}
+		
+		// Message to console.
+		System.out.println("Draw variant.");
+		
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Paint the center grid. Debug.
+		int x1 = x;
+		int y1 = y;
+		// Set the color based on this variant.
+		g.setColor(runningVariant.getColor());
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+			if (list[i].compareTo("P") == 0) {
+				g.fillRect(iX(x), iY(y), (int) (unit), (int) (unit));
+			}
+		}
+		// Debug.
+		g.setColor(Color.BLACK);
+		g.fillRect(iX(x1), iY(y1), (int) unit, (int) unit);
+		// Default color is BLACK.
+		g.setColor(Color.BLACK);
+		
+	}
+	
+	// Debug. Paint the bottom boundary.
+	public void paintBottomBoundary(Graphics g) {
+		for (int i = 0; i < 10; i++) {
+			int x = bottomBoundaryX[i];
+			int y = bottomBoundaryY[i];
+			g.setColor(Color.BLACK);
+			g.fillRect(iX(x), iY(y), (int) unit, (int) unit);
+		}
+	}
+	
+	// Check the tetris variant with bottom boundary.
+	public void checkBottomBoundary() {
+		// Message to console.
+		System.out.println("Check bottom boundary");
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			
+			for (int j = 0; j < 10; j++) {
+				if (bottomBoundaryX[j] == x &&
+						bottomBoundaryY[j] == y - 1) {
+					isHalted = true;
+					System.out.println("isHalted = true");
+					addVariantToGrid();
+					updateBottomBoundary();
+					repaint();
+				}
+			}
+			
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+	}
+	
+	// Update bottom boundary.
+	public void updateBottomBoundary() {
+		for (int x = 0; x < 10; x++) {
+			// Hold the high y.
+			int highY = grid[x][0].getY();
+			for (int y = 0; y < 20; y++) {
+				if (grid[x][y].getColor() != Color.WHITE) {
+					highY = grid[x][y].getY();
+				}
+			}
+			bottomBoundaryY[x] = highY;
+		}
+		
+		
+	}
+	
+	// Add the running variant to the grid.
+	public void addVariantToGrid() {
+		// Get the current coordinates.
+		int x = runningVariant.getX();
+		int y = runningVariant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			for (int j = 0; j < 10; j++) {
+				for (int k = 0; k < 20; k++) {
+					if (grid[j][k].getX() == x &&
+							grid[j][k].getY() == y) {
+						grid[j][k].setColor(runningVariant.getColor());
+					}
+				}
+			}
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+	}
+	
+	
+	// Draw the grid.
+	public void drawGrid(Graphics g) {
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 20; j++) {
+				if (grid[i][j].getColor() != Color.WHITE) {
+					g.setColor(grid[i][j].getColor());
+					g.fillRect(iX(grid[i][j].getX()), iY(grid[i][j].getY()), (int) (unit), (int) (unit));
+				}
+			}
+		}
+	}
 
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		System.out.println("Key Typed");
-		System.out.println("Key code = " + e.getKeyCode());
+		// Do nothing here.
 	}
 
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("Key Pressed");
-		System.out.println("Key code = " + e.getKeyCode());
+		// Check if we are at playing mode.
+		if (screenMode == 1) {
+			// Left Arrow.
+			if (e.getKeyCode() == 37) {
+				runningVariant.moveLeft();
+				repaint();
+			}
+			// Up Arrow.
+			if (e.getKeyCode() == 38) {
+				runningVariant.rotate();
+				repaint();
+			}
+			// Right Arrow.
+			if (e.getKeyCode() == 39) {
+				runningVariant.moveRight();
+				repaint();
+			}
+			// Down Arrow.
+			if (e.getKeyCode() == 40) {
+				runningVariant.moveDown();
+				repaint();
+			}
+		}
+		
 		
 	}
 
-
 	@Override
 	public void keyReleased(KeyEvent e) {
-		System.out.println("Key Released");
-		System.out.println("Key code = " + e.getKeyCode());
+		// Do nothing here.
 		
 	}
 
