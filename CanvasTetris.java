@@ -924,6 +924,32 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Do nothing here.
 		
 	}
+	
+	public void highScores(Graphics g) {
+		final int spacingFactor = 35;
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (2 * unit)));
+		g.drawString("HIGH SCORES", (int) (xCenter - 6.2 * unit), (int) (yCenter - 9 * unit));
+
+		List<String> scores = new ArrayList<>();
+
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (unit)));
+
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader("Highscores.txt"));
+			String line;
+			int i = 0;
+			while ((line = br.readLine()) != null) {
+				scores.add(line);
+
+				g.drawString(scores.get(i),  (int) (xCenter - 6.2 * unit), (int) (i * spacingFactor + 100));
+				i+=1;
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/*
 	public void paintGrid(SquareTetris[][] grid){
