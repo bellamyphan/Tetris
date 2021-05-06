@@ -330,10 +330,12 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			runningVariant.changeCoordiantesToStartingPoint();
 		}
 		
+		
 		// Paint the running tetris variant.
 		this.drawTetrisVariant(g, runningVariant);
 		// Paint the next tetris variant.
 		this.drawTetrisVariant(g, nextVariant);
+		
 		
 		// Keep the paint method recall itself.
 		try {
@@ -358,6 +360,9 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			lastTime = System.currentTimeMillis();
 		}
 		
+		// Check line deletion.
+		System.out.println(checkLineDeletion());
+		deleteFilledLine(checkLineDeletion());
 		
 		
 		
@@ -505,7 +510,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				if (bottomBoundaryX[j] == x &&
 						bottomBoundaryY[j] == y - 1) {
 					isHalted = true;
-					System.out.println("isHalted = true");
 					addVariantToGrid();
 					updateBottomBoundary();
 					repaint();
@@ -752,6 +756,38 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 		}
 	}
+	
+	
+	// Check for line deletion.
+	// Return the y index if it found a filled line.
+	public int checkLineDeletion() {
+		for (int y = 0; y < 20; y++) {
+			boolean isFilled = true; // Flag
+			for (int x = 0; x < 10; x++) {
+				if (grid[x][y].getColor() == Color.WHITE) {
+					isFilled = false;
+					break;
+				}
+			}
+			if (isFilled) {
+				return y;
+			}
+		}
+		return -1;
+	}
+	
+	public void deleteFilledLine(int yIndex) {
+		if (yIndex < 0) {
+			return;
+		}
+		for (int y = yIndex; y < 19; y++) {
+			for (int x = 0; x < 10; x++) {
+				grid[x][y].setColor(grid[x][y+1].getColor());
+			}
+		}
+		updateBottomBoundary();
+	}
+	
 	
 	
 	// Draw the grid.
