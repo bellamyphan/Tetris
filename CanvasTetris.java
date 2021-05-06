@@ -2,6 +2,14 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 // This is the canvas.
@@ -60,10 +68,14 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	int score;
 	int mileStone; // Use this as milestone to increase level.
 	int variantCount;
+	boolean isScoreSaved;
 	
 
 	// Default constructor for this canvas.
 	public CanvasTetris() {
+		
+		
+		
 		
 		// Initialize the lastTime and SystemMove.
 		lastTime = System.currentTimeMillis();
@@ -96,6 +108,8 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// First thing to do is that print the "Starting Screen" - "Menu".
         // Set the screenMode = 0.
 		screenMode = 0;
+		
+		
 		
 		// Add KeyListener to this Canvas.
 		// Handle KeyEvents below.
@@ -135,6 +149,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
     					mileStone = 10;
     					variantCount = 0;
     					baseClock = 1300;
+    					isScoreSaved = false;
     					// Repaint the canvas.
     					repaint();
     				}
@@ -167,6 +182,12 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	
 	// Check the lost condition.
 	public boolean isLost() {
+		for (int i = 0; i < 10; i++) {
+			if (bottomBoundaryY[i] >= 9) {
+				System.out.println("LOST");
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -213,9 +234,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			paintGame(g);
 			break;
 		case 2:
-			// Do something here.
+			paintSummary(g);
 			break;
 		default:
+			paintHighScore(g);
 			// Do something here.
 		}
 	}
@@ -401,7 +423,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		}
 		// Update the score.
 		if (lineCount > 0) {
-			System.out.println("Line + " + lineCount);
 			lines += lineCount;
 			switch (lineCount) {
 			case 1:
@@ -419,63 +440,141 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 		}
 		// Update the level with variant count and milestone.
+		// Update the baseClock.
 		if (variantCount >= mileStone) {
 			level++;
 			baseClock = (long) (baseClock * 90.0 / 100);
 			mileStone += 10;
 		}
 		
+		// Check the lost condition.
+		if (isLost()) {
+			screenMode = 2;
+		}
 		
 		
 		
-		/*
-		// Add timing system.
-		// Cannot use Sleep method.
+		
+	}
+	
+	public void paintHighScore(Graphics g) {
+		
+		// Print HIGH SCORE List.
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (2 * unit)));
+		g.drawString("High Scores", iX(-5), iY(5));
+		// Read the Highscores.txt and store the scores in the LinkedList.
+		LinkedList<Integer> scoreList = new LinkedList<>();
+		Scanner fileInput = null;
 		try {
-			TimeUnit.MILLISECONDS.sleep(baseClock);
-			runningVariant.moveDown();
-			repaint();
-		} catch (InterruptedException e) {
+			fileInput = new Scanner(new File("Highscores.txt"));
+			while (fileInput.hasNext()) {
+				scoreList.add(fileInput.nextInt());
+			}
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		fileInput.close();
+		// Add the current score to the list.
+		scoreList.add(score);
+		// Sort the list.
+		Collections.sort(scoreList);
+		// Remove the smallest score.
+		scoreList.removeFirst();
 		
 		
-		
-		/*
-		// Draw the boundary of this canvas.
-		g.drawRect(xCenter - (int) (10 * unit), yCenter - (int) (10 * unit), (int) (20 * unit), (int) (20 * unit));
-		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (unit)));	
-		g.drawString("TETRIS", (int) (xCenter + -2 * unit), (int) (yCenter - 10.2 * unit));
-		//create the next piece box
-		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (unit)));		
-		g.drawString("Next Piece:", (int) (xCenter + 12 * unit), (int) (yCenter - 10.2 * unit));
-		g.drawRect(xCenter - (int) (-12 * unit), yCenter - (int) (10 * unit), (int) (5 * unit), (int) (5 * unit));
-		//draw score
-		g.drawString("Score:", (int) (xCenter + 12 * unit), (int) (yCenter - 4 * unit));
-		
-		//for grid
-		int topY=yCenter - (int) (10* unit); //top of y for drawing squares
-		int bottomY=yCenter - (int) (-9* unit); //bottom of y for drawing squares
-		int leftMostX=xCenter - (int) (10 * unit); //left of x for drawing squares
-		int rightMostX=xCenter - (int) (-9 * unit); //right of x for drawing squares
-		//draw grid
-		for(int x=10; x>=-9;x--)
-		{
-			for(int y=10; y>=-9;y--)
-			{
-			g.drawRect(xCenter-(int) (x* unit), yCenter-(int) (y* unit), (int) (unit), (int) (unit));
+		// Save the new high score list.
+		PrintWriter fileOutput = null;
+		try {
+			fileOutput = new PrintWriter(new File("Highscores.txt"));
+			for (int i = 0; i < scoreList.size(); i++) {
+				fileOutput.println(scoreList.get(i));
 			}
+			fileOutput.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-				
 		
-		//for ex change numbers from 0 to 19 for left(0) to right(19) or top(0) to bottom(19)
-		g.fillRect((int) (leftMostX+unit*0), (int) (topY+unit*0), (int) (unit), (int) (unit));//fills top left
-		g.fillRect((int) (leftMostX+unit*19), (int) (topY+unit*19), (int) (unit), (int) (unit));//fills bottom right
-		*/
+		// Output the high score list.
+		for (int i = 0; i < scoreList.size(); i++) {
+			// Highlight the user score.
+			if (scoreList.get(scoreList.size() - 1 - i) == score) {
+				g.setColor(Color.RED);
+			}
+			g.drawString(i + 1 + ". " + scoreList.get(scoreList.size() - 1 - i), iX(-2.7f), iY(1.3f - 1.7f * i));
+			g.setColor(Color.BLACK);
+		}
 		
 	}
+	
+	// Paint the summary screen.
+	public void paintSummary(Graphics g) {
+		
+		// Print the summary score.
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (2 * unit)));
+		g.drawString("Your Score: " + score, iX(-7), iY(6));
+		
+		
+		// Print HIGH SCORE List.
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (1 * unit)));
+		g.drawString("High Scores", iX(-3), iY(3));
+		// Read the Highscores.txt and store the scores in the LinkedList.
+		LinkedList<Integer> scoreList = new LinkedList<>();
+		Scanner fileInput = null;
+		try {
+			fileInput = new Scanner(new File("Highscores.txt"));
+			while (fileInput.hasNext()) {
+				scoreList.add(fileInput.nextInt());
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		fileInput.close();
+		
+		// Make sure the score is save once.
+		if (!isScoreSaved) {
+			// Add the current score to the list.
+			scoreList.add(score);
+			// Sort the list.
+			Collections.sort(scoreList);
+			// Remove the smallest score.
+			scoreList.removeFirst();
+		}
+		
+		
+		// Save the new high score list.
+		PrintWriter fileOutput = null;
+		try {
+			fileOutput = new PrintWriter(new File("Highscores.txt"));
+			for (int i = 0; i < scoreList.size(); i++) {
+				fileOutput.println(scoreList.get(i));
+			}
+			fileOutput.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// Output the high score list.
+		for (int i = 0; i < scoreList.size(); i++) {
+			// Highlight the user score.
+			if (scoreList.get(scoreList.size() - 1 - i) == score) {
+				g.setColor(Color.RED);
+			}
+			g.drawString(i + 1 + ". " + scoreList.get(scoreList.size() - 1 - i), iX(-2), iY(1.3f - 1.2f * i));
+			g.setColor(Color.BLACK);
+		}
+		
+		// Flag this score is saved.
+		isScoreSaved = true;
+		
+		
+	}
+	
 	
 	// Draw the current tetris variant.
 	public void drawTetrisVariant(Graphics g, TetrisVariant variant) {
@@ -927,9 +1026,8 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		
 	}
 
-	/*
-	public void paintGrid(SquareTetris[][] grid){
-		SquareTetris squareObj = new SquareTetris();
-		grid[1][1] = squareObj;
-	} */
+	
+	
+	
+	
 }
