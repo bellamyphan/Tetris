@@ -320,6 +320,9 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Paint the next tetris variant.
 		this.drawTetrisVariant(g, nextVariant);
 		
+		// Debug.
+		System.out.println("Longest Distance y = " + countDistanceToBottom(runningVariant));
+		
 		/*
 		// Draw the boundary of this canvas.
 		g.drawRect(xCenter - (int) (10 * unit), yCenter - (int) (10 * unit), (int) (20 * unit), (int) (20 * unit));
@@ -617,23 +620,53 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	
 	
 	// Count the distance from the current variant to the bottom boundary.
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// Use with the Space Button.
+	public int countDistanceToBottom(TetrisVariant variant) {
+		// Hold the longest distance.
+		int shortestDistance = 100;
+		// Get the current coordinate.
+		int x = variant.getX();
+		int y = variant.getY();
+		// Get the list of string code.
+		String[] list = runningVariant.outputStringCode().split("");
+		for (int i = 0; i < list.length; i++) {
+			// Update distance.
+			int xIndex = 0;
+			for (int j = 0; j < 10; j++) { // Find the index of bottomBoundary.
+				if (bottomBoundaryX[j] == x) {
+					xIndex = j;
+					/*
+					// Debug.
+					System.out.println("x = " + x + " j = " + j);
+					System.out.println("There is a match in count distance y.");
+					*/
+					break;
+				}
+			}
+			/*
+			// Debug.
+			System.out.println("new distance = " + (bottomBoundaryY[xIndex] - y));
+			System.out.println("y = " + y + " bottomY = " + bottomBoundaryY[xIndex]);
+			*/
+			if (y - bottomBoundaryY[xIndex] - 1 < shortestDistance) { // Compare distance in y axis.
+				shortestDistance = y - bottomBoundaryY[xIndex] - 1;
+			}
+			// Update coordinates.
+			if (list[i].compareTo("U") == 0) {
+				y++;
+			}
+			if (list[i].compareTo("D") == 0) {
+				y--;
+			}
+			if (list[i].compareTo("L") == 0) {
+				x--;
+			}
+			if (list[i].compareTo("R") == 0) {
+				x++;
+			}
+		}
+		return shortestDistance;
+	}
 	
 	
 	// Add the running variant to the grid.
@@ -691,7 +724,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	public void keyPressed(KeyEvent e) {
 		
 		// Debug.
-		System.out.println(e.getKeyCode());
+		// System.out.println(e.getKeyCode());
 		
 		// Check if we are at playing mode.
 		if (screenMode == 1) {
@@ -729,7 +762,15 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			}
 			// Space Button.
 			if (e.getKeyCode() == 32) {
-				
+				// Debug.
+				// System.out.println("Hit the Space Button");
+				// System.out.println("Counter = " + countDistanceToBottom(runningVariant));
+				for (int i = 0; i < countDistanceToBottom(runningVariant);) {
+					// Debug.
+					// System.out.println("i = " + i + " counter = " + countDistanceToBottom(runningVariant));
+					runningVariant.moveDown();
+				}
+				repaint();
 			}
 		}
 		
