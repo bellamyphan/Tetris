@@ -2,12 +2,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 // This is the canvas.
 public class CanvasTetris extends Canvas implements KeyListener {
@@ -52,10 +47,24 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	int[] bottomBoundaryX;
 	int[] bottomBoundaryY;
 	
+	// Hold the base time clock.
+	// Each level will decrease the amount of time.
+	long baseClock;
+	long lastTime;
+	long currentTime;
+	boolean isSystemMoved; // If the system moved, then update the lastTime.
 	
 
 	// Default constructor for this canvas.
 	public CanvasTetris() {
+		
+		// Initialize the lastTime and SystemMove.
+		lastTime = System.currentTimeMillis();
+		isSystemMoved = false;
+		
+		// Initialize the base time lock.
+		// 2 seconds = 2000 ms.
+		baseClock = 1300;
 		
 		// Initialize the gridTetris.
 		// The origin of this grid is at (-9,-10).
@@ -124,7 +133,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
     					// Message to the console.
     					System.out.println("User hit HIGH SCORES button.");
     					// Change the ScreenMode.
-    					screenMode = 2;
+    					screenMode = 3;
     					// Repaint the canvas.
     					repaint();
     				}
@@ -191,8 +200,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			paintGame(g);
 			break;
 		case 2:
-			// Display high scores
-			highScores(g);
+			// Do something here.
 			break;
 		default:
 			// Do something here.
@@ -266,6 +274,8 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	}
 	
 	public void paintGame(Graphics g) {
+		
+		
 		// Draw the grid.
 		this.drawGrid(g);
 		g.setColor(Color.BLACK);
@@ -320,13 +330,55 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			runningVariant.changeCoordiantesToStartingPoint();
 		}
 		
+		
 		// Paint the running tetris variant.
 		this.drawTetrisVariant(g, runningVariant);
 		// Paint the next tetris variant.
 		this.drawTetrisVariant(g, nextVariant);
 		
-		// Debug.
-		System.out.println("Longest Distance y = " + countDistanceToBottom(runningVariant));
+		
+		// Keep the paint method recall itself.
+		try {
+			TimeUnit.MILLISECONDS.sleep(10);
+			repaint();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// When system not move, get the current time and check baseClock.
+		if (!isSystemMoved) {
+			currentTime = System.currentTimeMillis();
+			if (currentTime - lastTime > baseClock) {
+				runningVariant.moveDown();
+				isSystemMoved = true;
+				repaint();
+			}
+		}
+		if (isSystemMoved) {
+			isSystemMoved = false;
+			lastTime = System.currentTimeMillis();
+		}
+		
+		// Check line deletion.
+		deleteFilledLine(checkLineDeletion());
+		
+		
+		
+		/*
+		// Add timing system.
+		// Cannot use Sleep method.
+		try {
+			TimeUnit.MILLISECONDS.sleep(baseClock);
+			runningVariant.moveDown();
+			repaint();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		
+		
 		
 		/*
 		// Draw the boundary of this canvas.
@@ -457,7 +509,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				if (bottomBoundaryX[j] == x &&
 						bottomBoundaryY[j] == y - 1) {
 					isHalted = true;
-					System.out.println("isHalted = true");
 					addVariantToGrid();
 					updateBottomBoundary();
 					repaint();
@@ -492,8 +543,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		for (int i = 0; i < list.length; i++) {
 			
 			if (x <= -9) {
-				// Message to console.
-				System.out.println("Hit the Left Boundary");
 				return true;
 			}
 			
@@ -523,8 +572,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		for (int i = 0; i < list.length; i++) {
 			
 			if (x < -9) {
-				// Message to console.
-				System.out.println("Hit the Left Boundary while rotating.");
 				return true;
 			}
 			
@@ -554,8 +601,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		for (int i = 0; i < list.length; i++) {
 			
 			if (x > -1) {
-				// Message to console.
-				System.out.println("Hit the Right Boundary");
 				return true;
 			}
 			
@@ -585,8 +630,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		for (int i = 0; i < list.length; i++) {
 			
 			if (x > 0) {
-				// Message to console.
-				System.out.println("Hit the Right Boundary while rotating.");
 				return true;
 			}
 			
@@ -706,6 +749,38 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	}
 	
 	
+	// Check for line deletion.
+	// Return the y index if it found a filled line.
+	public int checkLineDeletion() {
+		for (int y = 0; y < 20; y++) {
+			boolean isFilled = true; // Flag
+			for (int x = 0; x < 10; x++) {
+				if (grid[x][y].getColor() == Color.WHITE) {
+					isFilled = false;
+					break;
+				}
+			}
+			if (isFilled) {
+				return y;
+			}
+		}
+		return -1;
+	}
+	
+	public void deleteFilledLine(int yIndex) {
+		if (yIndex < 0) {
+			return;
+		}
+		for (int y = yIndex; y < 19; y++) {
+			for (int x = 0; x < 10; x++) {
+				grid[x][y].setColor(grid[x][y+1].getColor());
+			}
+		}
+		updateBottomBoundary();
+	}
+	
+	
+	
 	// Draw the grid.
 	public void drawGrid(Graphics g) {
 		for (int i = 0; i < 10; i++) {
@@ -778,40 +853,12 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				repaint();
 			}
 		}
-		
-		
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// Do nothing here.
 		
-	}
-
-	public void highScores(Graphics g) {
-		final int spacingFactor = 35;
-		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (2 * unit)));
-		g.drawString("HIGH SCORES", (int) (xCenter - 6.2 * unit), (int) (yCenter - 9 * unit));
-
-		List<String> scores = new ArrayList<>();
-
-		g.setFont(new Font("TimesRoman", Font.BOLD, (int) (unit)));
-
-		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader("Highscores.txt"));
-			String line;
-			int i = 0;
-			while ((line = br.readLine()) != null) {
-				scores.add(line);
-
-				g.drawString(scores.get(i),  (int) (xCenter - 6.2 * unit), (int) (i * spacingFactor + 100));
-				i+=1;
-			}
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/*
