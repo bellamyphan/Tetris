@@ -54,6 +54,11 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	long currentTime;
 	boolean isSystemMoved; // If the system moved, then update the lastTime.
 	
+	// Keep track with the scoring system.
+	int level;
+	int lines;
+	int score;
+	
 
 	// Default constructor for this canvas.
 	public CanvasTetris() {
@@ -125,6 +130,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
     					System.out.println("User hit PLAY TETRIS button.");
     					// Change the ScreenMode.
     					screenMode = 1;
+    					// Initialize the scoring system.
+    					score = 0;
+    					level = 1;
+    					lines = 0;
     					// Repaint the canvas.
     					repaint();
     				}
@@ -298,6 +307,23 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Print the Score Box.
 		g.drawRect(iX(3), iY(-3), (int) (6 * unit), (int) (2 * unit));
 		
+		// Print the Level Info.
+		g.setFont(new Font("TimesRoman", Font.BOLD, (int) unit));
+		g.drawString("Level:", iX(4), iY(1.5f));
+		g.drawString(Integer.toString(level), iX(7), iY(1.5f));
+		
+		// Print the Line Info.
+		g.drawString("Lines:", iX(4), iY(-1.5f));
+		g.drawString(Integer.toString(lines), iX(7), iY(-1.5f));
+		
+		// Print the Score Info.
+		g.drawString("Score:", iX(4), iY(-4.5f));
+		g.drawString(Integer.toString(score), iX(7), iY(-4.5f));
+		
+		
+		
+		
+		
 		// Draw the vertical grid for the playground based on the logical coordinates.
 		// Top left point (-9,10).
 		// Top right point (1, 10).
@@ -315,14 +341,14 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			g.drawLine(iX(-9), iY(y), iX(1), iY(y));
 		}
 		
-		// Create a new variant.
+		// Create a new variant shown in the Next Piece Box.
 		if (isUsed) {
 			nextVariant = new TetrisVariant();
 			isUsed = false;
 			nextVariant.changeCoordinatesToNewBox();
 		}
 		
-		// Create a new variant.
+		// Get the new variant from the next piece box.
 		if (isHalted) {
 			runningVariant = nextVariant;
 			isUsed = true;
@@ -338,6 +364,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		
 		
 		// Keep the paint method recall itself.
+		// Need this to work with the timing system.
 		try {
 			TimeUnit.MILLISECONDS.sleep(10);
 			repaint();
@@ -361,7 +388,32 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		}
 		
 		// Check line deletion.
-		deleteFilledLine(checkLineDeletion());
+		// Keep up with Line Counter to calculate the score.
+		int lineCount = 0;
+		while (checkLineDeletion() != -1) {
+			deleteFilledLine(checkLineDeletion());
+			lineCount++;
+		}
+		// Update the score.
+		if (lineCount > 0) {
+			System.out.println("Line + " + lineCount);
+			lines += lineCount;
+			switch (lineCount) {
+			case 1:
+				score += 40 * level;
+				break;
+			case 2:
+				score += 100 * level;
+				break;
+			case 3:
+				score += 300 * level;
+				break;
+			case 4:
+				score += 1200 * level;
+				break;
+			}
+		}
+		
 		
 		
 		

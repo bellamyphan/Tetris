@@ -63,8 +63,6 @@ public class TetrisVariant {
     public void rotate() {
     	state++;
     	state = state % 4;
-    	// Message to console.
-    	System.out.println("Rotate " + state);
     }
     
     // Get a random shape.
