@@ -165,7 +165,10 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		return yCenter - Math.round(y * unit);
 	}
 	
-	
+	// Check the lost condition.
+	public boolean isLost() {
+		return false;
+	}
 	
 	
 	// Initialize the graphics.
@@ -402,16 +405,16 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			lines += lineCount;
 			switch (lineCount) {
 			case 1:
-				score += 40 * level;
+				score += 5 * level;
 				break;
 			case 2:
-				score += 100 * level;
+				score += 15 * level;
 				break;
 			case 3:
-				score += 300 * level;
+				score += 75 * level;
 				break;
 			case 4:
-				score += 1200 * level;
+				score += 400 * level;
 				break;
 			}
 		}
@@ -482,9 +485,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Get the current coordinates.
 		int x = variant.getX();
 		int y = variant.getY();
-		// Paint the center grid. Debug.
-		int x1 = x;
-		int y1 = y;
 		// Set the color based on this variant.
 		g.setColor(variant.getColor());
 		// Get the list of string code.
@@ -503,12 +503,12 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				x++;
 			}
 			if (list[i].compareTo("P") == 0) {
-				g.fillRect(iX(x), iY(y), (int) (unit), (int) (unit));
+				// Only paint when y coordinate inside the playground.
+				if (y <= 10) {
+					g.fillRect(iX(x), iY(y), (int) (unit), (int) (unit));
+				}
 			}
 		}
-		// Debug.
-		g.setColor(Color.BLACK);
-		g.fillRect(iX(x1), iY(y1), (int) unit, (int) unit);
 		// Default color is BLACK.
 		g.setColor(Color.BLACK);
 		// Draw the edge after finish painting the variant.
@@ -540,7 +540,9 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				x++;
 			}
 			if (list[i].compareTo("P") == 0) {
-				g.drawRect(iX(x), iY(y), (int) (unit), (int) (unit));
+				if (y <= 10) {
+					g.drawRect(iX(x), iY(y), (int) (unit), (int) (unit));
+				}
 			}
 		}
 		
@@ -899,13 +901,13 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			if (e.getKeyCode() == 40) {
 				runningVariant.moveDown();
 				// Bonus score.
-				score += 2 * level;
+				score += 1 * level;
 				repaint();
 			}
 			// Space Button.
 			if (e.getKeyCode() == 32) {
 				// Bonus score.
-				score += 2 * level * countDistanceToBottom(runningVariant);
+				score += 1 * level * countDistanceToBottom(runningVariant);
 				// Debug.
 				// System.out.println("Hit the Space Button");
 				// System.out.println("Counter = " + countDistanceToBottom(runningVariant));

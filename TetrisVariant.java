@@ -43,7 +43,7 @@ public class TetrisVariant {
     // Change the coordinates to the starting point.
     public void changeCoordiantesToStartingPoint() {
     	x = -5;
-    	y = 13;
+    	y = 12;
     }
     
     // Change the coordinates to the Next Piece box.
