@@ -58,6 +58,8 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	int level;
 	int lines;
 	int score;
+	int mileStone; // Use this as milestone to increase level.
+	int variantCount;
 	
 
 	// Default constructor for this canvas.
@@ -66,10 +68,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Initialize the lastTime and SystemMove.
 		lastTime = System.currentTimeMillis();
 		isSystemMoved = false;
-		
-		// Initialize the base time lock.
-		// 2 seconds = 2000 ms.
-		baseClock = 1300;
 		
 		// Initialize the gridTetris.
 		// The origin of this grid is at (-9,-10).
@@ -134,6 +132,9 @@ public class CanvasTetris extends Canvas implements KeyListener {
     					score = 0;
     					level = 1;
     					lines = 0;
+    					mileStone = 10;
+    					variantCount = 0;
+    					baseClock = 1300;
     					// Repaint the canvas.
     					repaint();
     				}
@@ -290,7 +291,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		g.setColor(Color.BLACK);
 		
 		// Debug. Paint bottom boundary.
-		paintBottomBoundary(g);
+		// paintBottomBoundary(g);
 		
 		// Print the playground boundary.
 		g.drawRect(iX(-9), iY(10), (int) (10 * unit), (int) (20 * unit));
@@ -309,16 +310,16 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		
 		// Print the Level Info.
 		g.setFont(new Font("TimesRoman", Font.BOLD, (int) unit));
-		g.drawString("Level:", iX(4), iY(1.5f));
-		g.drawString(Integer.toString(level), iX(7), iY(1.5f));
+		g.drawString("Level:", iX(3.3f), iY(1.5f));
+		g.drawString(Integer.toString(level), iX(6.3f), iY(1.5f));
 		
 		// Print the Line Info.
-		g.drawString("Lines:", iX(4), iY(-1.5f));
-		g.drawString(Integer.toString(lines), iX(7), iY(-1.5f));
+		g.drawString("Lines:", iX(3.3f), iY(-1.5f));
+		g.drawString(Integer.toString(lines), iX(6.3f), iY(-1.5f));
 		
 		// Print the Score Info.
-		g.drawString("Score:", iX(4), iY(-4.5f));
-		g.drawString(Integer.toString(score), iX(7), iY(-4.5f));
+		g.drawString("Score:", iX(3.3f), iY(-4.5f));
+		g.drawString(Integer.toString(score), iX(6.3f), iY(-4.5f));
 		
 		
 		
@@ -350,6 +351,7 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		
 		// Get the new variant from the next piece box.
 		if (isHalted) {
+			variantCount++;
 			runningVariant = nextVariant;
 			isUsed = true;
 			isHalted = false;
@@ -412,6 +414,12 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				score += 1200 * level;
 				break;
 			}
+		}
+		// Update the level with variant count and milestone.
+		if (variantCount >= mileStone) {
+			level++;
+			baseClock = (long) (baseClock * 90.0 / 100);
+			mileStone += 10;
 		}
 		
 		
@@ -890,10 +898,14 @@ public class CanvasTetris extends Canvas implements KeyListener {
 			// Down Arrow.
 			if (e.getKeyCode() == 40) {
 				runningVariant.moveDown();
+				// Bonus score.
+				score += 2 * level;
 				repaint();
 			}
 			// Space Button.
 			if (e.getKeyCode() == 32) {
+				// Bonus score.
+				score += 2 * level * countDistanceToBottom(runningVariant);
 				// Debug.
 				// System.out.println("Hit the Space Button");
 				// System.out.println("Counter = " + countDistanceToBottom(runningVariant));
