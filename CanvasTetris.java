@@ -2,6 +2,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.TimeUnit;
 
 // This is the canvas.
 public class CanvasTetris extends Canvas implements KeyListener {
@@ -46,10 +47,24 @@ public class CanvasTetris extends Canvas implements KeyListener {
 	int[] bottomBoundaryX;
 	int[] bottomBoundaryY;
 	
+	// Hold the base time clock.
+	// Each level will decrease the amount of time.
+	long baseClock;
+	long lastTime;
+	long currentTime;
+	boolean isSystemMoved; // If the system moved, then update the lastTime.
 	
 
 	// Default constructor for this canvas.
 	public CanvasTetris() {
+		
+		// Initialize the lastTime and SystemMove.
+		lastTime = System.currentTimeMillis();
+		isSystemMoved = false;
+		
+		// Initialize the base time lock.
+		// 2 seconds = 2000 ms.
+		baseClock = 1300;
 		
 		// Initialize the gridTetris.
 		// The origin of this grid is at (-9,-10).
@@ -320,8 +335,46 @@ public class CanvasTetris extends Canvas implements KeyListener {
 		// Paint the next tetris variant.
 		this.drawTetrisVariant(g, nextVariant);
 		
-		// Debug.
-		System.out.println("Longest Distance y = " + countDistanceToBottom(runningVariant));
+		// Keep the paint method recall itself.
+		try {
+			TimeUnit.MILLISECONDS.sleep(10);
+			repaint();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// When system not move, get the current time and check baseClock.
+		if (!isSystemMoved) {
+			currentTime = System.currentTimeMillis();
+			if (currentTime - lastTime > baseClock) {
+				runningVariant.moveDown();
+				isSystemMoved = true;
+				repaint();
+			}
+		}
+		if (isSystemMoved) {
+			isSystemMoved = false;
+			lastTime = System.currentTimeMillis();
+		}
+		
+		
+		
+		
+		/*
+		// Add timing system.
+		// Cannot use Sleep method.
+		try {
+			TimeUnit.MILLISECONDS.sleep(baseClock);
+			runningVariant.moveDown();
+			repaint();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		
+		
 		
 		/*
 		// Draw the boundary of this canvas.
@@ -773,8 +826,6 @@ public class CanvasTetris extends Canvas implements KeyListener {
 				repaint();
 			}
 		}
-		
-		
 	}
 
 	@Override
